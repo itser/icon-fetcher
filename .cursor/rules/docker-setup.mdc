@@ -1,5 +1,14 @@
 ---
-description: Docker setup without database
+description: Docker без базы данных
 globs: docker-compose.yml,app/docker/**,app/.env*
 alwaysApply: false
 ---
+
+# Docker
+
+- В корне только `docker-compose.yml` для оркестрации
+- Контейнеры и конфиги приложения — в `app/docker/`
+- Сервисы: `app` (php-fpm) + `nginx`; порт 8080
+- Volume: `./app:/var/www`
+- Не добавлять mysql, postgres, redis, mariadb без явной просьбы
+- `app/.env`: `DB_CONNECTION=sqlite`, `CACHE_STORE=file`, `SESSION_DRIVER=file`, `QUEUE_CONNECTION=sync`

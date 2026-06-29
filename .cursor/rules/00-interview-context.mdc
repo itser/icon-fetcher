@@ -1,4 +1,17 @@
 ---
-description: Interview prep CAS.AI
+description: Подготовка к собеседованию CAS.AI
 alwaysApply: true
 ---
+
+# Контекст собеседования
+
+- Репозиторий: подготовка к CAS.AI (Middle Fullstack Laravel / Vue 3 / Node.js)
+- Основное приложение: `app/` — Laravel + Vue 3 в `app/resources/js`
+- Node-микросервисы: только в `services/<name>/` — не смешивать с `app/`
+- Docker: без контейнера БД по умолчанию; CACHE/SESSION — file, QUEUE — sync
+- Решения простые — без лишних пакетов и over-engineering
+- Кратко объясняй решения — это live coding с интервьюером
+- Без Eloquent/миграций, если задача не про БД — in-memory repository или массивы
+- Не предлагать Sail, MySQL, Redis без явной просьбы
+
+@.cursor/rules/cas-ai-vacancy.md
