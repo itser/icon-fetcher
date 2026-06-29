@@ -1,0 +1,5 @@
+---
+description: Docker setup without database
+globs: docker-compose.yml,app/docker/**,app/.env*
+alwaysApply: false
+---

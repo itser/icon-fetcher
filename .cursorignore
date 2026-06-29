@@ -1,0 +1,6 @@
+app/vendor/
+app/node_modules/
+app/storage/logs/
+app/bootstrap/cache/
+.env
+.env.*

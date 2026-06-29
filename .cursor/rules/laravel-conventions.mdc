@@ -1,0 +1,5 @@
+---
+description: Laravel conventions for app/
+globs: app/**/*.php,app/routes/**,app/tests/**
+alwaysApply: false
+---

@@ -1,0 +1,44 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Laravel (app/)
+app/vendor/
+app/node_modules/
+app/public/build/
+app/public/hot/
+app/public/storage
+app/storage/*.key
+app/storage/pail/
+app/bootstrap/cache/*
+!app/bootstrap/cache/.gitignore
+app/.phpunit.result.cache
+app/.phpunit.cache
+app/auth.json
+app/Homestead.json
+app/Homestead.yaml
+app/npm-debug.log
+app/yarn-error.log
+
+# Node (services/)
+services/*/node_modules/
+services/*/dist/
+services/*/build/
+
+# Docker
+*.log
+
+# Testing / coverage
+coverage/
+.nyc_output/

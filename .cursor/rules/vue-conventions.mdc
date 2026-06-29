@@ -1,0 +1,5 @@
+---
+description: Vue 3 conventions in Laravel app
+globs: app/resources/js/**,app/vite.config.js,app/package.json
+alwaysApply: false
+---
