@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: 3a complete (feature tests green after migrate). **Next: 3b — ProcessAppIconTaskJob.**
+Current state: 3a + minimal web UI done. **Next: 3b — ProcessAppIconTaskJob.**
 
 ## Principles
 
@@ -134,11 +134,21 @@ flowchart LR
 
 Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1`.
 
+## Web UI
+
+| URL | Description |
+| --- | ----------- |
+| `GET /app-icons` | Minimal Blade page: fetch icons by `bundle_id`, list tasks, show images or per-store errors |
+
+UI calls the JSON API via `fetch()` — no separate web controller; API contract unchanged.
+
+Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
+
 ## MVP decisions
 
 - **Task storage:** SQLite, table `app_icon_tasks`
 - **Status enum:** `pending`, `processing`, `completed`, `failed`
-- **Frontend:** none, JSON API only
+- **Frontend:** minimal Blade UI at `/app-icons` (fetch to JSON API)
 - **Apple:** iTunes Lookup API
 - **Google Play:** HTTP fetch + HTML parsing
 - **bundle_id validation:** `^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$`
@@ -197,9 +207,8 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 - [x] `POST` invalid `bundle_id` → `422`
 - [x] `GET /api/v1/app-icons/tasks/{id}` → `200`, completed, urls
 - [x] `GET` partial success → completed, one url + errors
+- [x] `GET` list of tasks → `200`, `data[]`
 - [x] `GET` unknown id → `404`
-
-Feature tests stay **red** until step **3a.3** is complete.
 
 ---
 
@@ -221,10 +230,8 @@ Feature tests stay **red** until step **3a.3** is complete.
 
 - [x] `StoreAppIconTaskRequest` — `bundle_id` regex validation
 - [x] `AppIconTaskResource` — JSON under `data`: `id`, `bundle_id`, `status`, urls, `errors`
-- [x] `AppIconTaskController` — `store()`, `show()` (calls service)
-- [x] Routes in `AppIcon/routes/api.php`: `POST/GET app-icons/tasks`
-
-`AppIconTaskService` stub: `createAndFetch()` → 501; `find()` works for 404 test.
+- [x] `AppIconTaskController` — `index()`, `store()`, `show()` (calls service)
+- [x] Routes in `AppIcon/routes/api.php`: `GET/POST app-icons/tasks`, `GET tasks/{id}`
 
 ---
 
@@ -233,7 +240,7 @@ Feature tests stay **red** until step **3a.3** is complete.
 **Implementation:**
 
 - [x] `AppIconTaskRepository` — CRUD via model (not `DB::` facade)
-- [x] `AppIconTaskService` — `createAndFetch()`, `find()`, `execute()`
+- [x] `AppIconTaskService` — `createAndFetch()`, `find()`, `list()`, `execute()`
 - [x] DTO `IconFetchResult` in `app/Shared/DTO/`
 - [x] Wire controller → `service->createAndFetch()` / `service->find()`
 
@@ -243,6 +250,19 @@ Feature tests stay **red** until step **3a.3** is complete.
 2. GET → controller → `service->find($id)` → result
 
 **Verify:** `php artisan test tests/Feature/AppIconTaskApiTest.php` — all green.
+
+---
+
+#### 3a.4. Minimal web UI — done
+
+**Implementation:**
+
+- [x] `GET /app-icons` — Blade page (`resources/views/app-icons/index.blade.php`)
+- [x] **Fetch icons** — `POST /api/v1/app-icons/tasks` via `fetch()`
+- [x] **List tasks** — `GET /api/v1/app-icons/tasks` via `fetch()`
+- [x] Show Apple / Google `<img>` or «Icon not found»; display `errors` per store (partial success, no crash)
+
+**Verify:** open http://localhost:8081/app-icons after `docker compose up` + `migrate`.
 
 ---
 
@@ -264,7 +284,7 @@ Feature tests stay **red** until step **3a.3** is complete.
 ### 4. Docker & README
 
 - `docker compose up` + `migrate` + `test` — all green
-- README: curl examples (success, partial, invalid), time spent
+- README: launch, web UI, curl examples (success, partial, invalid), time spent
 - `.env`: `QUEUE_CONNECTION=sync`
 
 ---
@@ -310,10 +330,12 @@ Feature tests stay **red** until step **3a.3** is complete.
 5. [x] `add app icon tasks migration model and status enum`
 6. [x] `add task api controller request resource and routes`
 7. [x] `add task service repository and IconFetchResult dto`
-8. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service` ← **next**
-9. [ ] `update readme with launch instructions`
+8. [x] `add list app icon tasks endpoint through service layers`
+9. [x] `add minimal blade ui for app icon fetcher`
+10. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service` ← **next**
+11. [ ] `update readme with launch instructions`
 
 **Phase 2:**
 
-10. [ ] `add redis and horizon to docker compose`
-11. [ ] `switch queue to redis and add horizon config`
+12. [ ] `add redis and horizon to docker compose`
+13. [ ] `switch queue to redis and add horizon config`

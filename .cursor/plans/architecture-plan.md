@@ -29,3 +29,8 @@
 - Feature tests as primary verification
 - Adapter contract tests: each port has a concrete adapter implementation
 - `Http::fake` for external store integrations
+
+## Web UI
+
+- `GET /app-icons` — minimal Blade demo; consumes JSON API client-side
+- Satisfies task spec option for user-friendly output (images + clear store errors)
