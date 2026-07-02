@@ -25,11 +25,11 @@ class AppIconTaskApiTest extends TestCase
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('status', 'completed')
-            ->assertJsonPath('bundle_id', self::BUNDLE_ID)
-            ->assertJsonPath('apple_icon_url', self::APPLE_ICON_URL)
-            ->assertJsonPath('google_icon_url', self::GOOGLE_ICON_URL)
-            ->assertJsonPath('errors', []);
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.bundle_id', self::BUNDLE_ID)
+            ->assertJsonPath('data.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.google_icon_url', self::GOOGLE_ICON_URL)
+            ->assertJsonPath('data.errors', []);
     }
 
     public function test_post_returns_422_for_invalid_bundle_id(): void
@@ -48,17 +48,17 @@ class AppIconTaskApiTest extends TestCase
 
         $taskId = $this->postJson('/api/v1/app-icons/tasks', [
             'bundle_id' => self::BUNDLE_ID,
-        ])->json('id');
+        ])->json('data.id');
 
         $response = $this->getJson("/api/v1/app-icons/tasks/{$taskId}");
 
         $response->assertOk()
-            ->assertJsonPath('id', $taskId)
-            ->assertJsonPath('status', 'completed')
-            ->assertJsonPath('bundle_id', self::BUNDLE_ID)
-            ->assertJsonPath('apple_icon_url', self::APPLE_ICON_URL)
-            ->assertJsonPath('google_icon_url', self::GOOGLE_ICON_URL)
-            ->assertJsonPath('errors', []);
+            ->assertJsonPath('data.id', $taskId)
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.bundle_id', self::BUNDLE_ID)
+            ->assertJsonPath('data.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.google_icon_url', self::GOOGLE_ICON_URL)
+            ->assertJsonPath('data.errors', []);
     }
 
     public function test_get_returns_partial_success_with_errors(): void
@@ -75,20 +75,20 @@ class AppIconTaskApiTest extends TestCase
         ]);
 
         $createResponse->assertOk()
-            ->assertJsonPath('status', 'completed')
-            ->assertJsonPath('apple_icon_url', self::APPLE_ICON_URL)
-            ->assertJsonPath('google_icon_url', null);
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.google_icon_url', null);
 
-        $this->assertNotEmpty($createResponse->json('errors'));
+        $this->assertNotEmpty($createResponse->json('data.errors'));
 
-        $response = $this->getJson('/api/v1/app-icons/tasks/'.$createResponse->json('id'));
+        $response = $this->getJson('/api/v1/app-icons/tasks/'.$createResponse->json('data.id'));
 
         $response->assertOk()
-            ->assertJsonPath('status', 'completed')
-            ->assertJsonPath('apple_icon_url', self::APPLE_ICON_URL)
-            ->assertJsonPath('google_icon_url', null);
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.google_icon_url', null);
 
-        $this->assertNotEmpty($response->json('errors'));
+        $this->assertNotEmpty($response->json('data.errors'));
     }
 
     public function test_get_returns_404_for_unknown_task_id(): void

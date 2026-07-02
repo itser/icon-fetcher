@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: steps 0–2 done, feature tests (red). **3a.1 done. Next: 3a.2 — controller, request, resource, routes.**
+Current state: 3a.1–3a.2 done. **Next: 3a.3 — repository, service logic, DTO.**
 
 ## Principles
 
@@ -214,20 +214,20 @@ Feature tests stay **red** until step **3a.3** is complete.
 
 ---
 
-#### 3a.2. HTTP layer (no business logic yet) — **next**
+#### 3a.2. HTTP layer — done
 
 **Implementation:**
 
-- [ ] `StoreAppIconTaskRequest` — `bundle_id` regex validation
-- [ ] `AppIconTaskResource` — flat JSON: `id`, `bundle_id`, `status`, urls, `errors`
-- [ ] `AppIconTaskController` — `store()`, `show()` (thin; calls service)
-- [ ] Routes in `AppIcon/routes/api.php`: `POST/GET app-icons/tasks`
+- [x] `StoreAppIconTaskRequest` — `bundle_id` regex validation
+- [x] `AppIconTaskResource` — JSON under `data`: `id`, `bundle_id`, `status`, urls, `errors`
+- [x] `AppIconTaskController` — `store()`, `show()` (calls service)
+- [x] Routes in `AppIcon/routes/api.php`: `POST/GET app-icons/tasks`
 
-Controller methods exist; service calls can stub or 501 until **3a.3**.
+`AppIconTaskService` stub: `createAndFetch()` → 501; `find()` works for 404 test.
 
 ---
 
-#### 3a.3. Business layer (feature tests green)
+#### 3a.3. Business layer (feature tests green) — **next**
 
 **Implementation:**
 
@@ -307,8 +307,8 @@ Controller methods exist; service calls can stub or 501 until **3a.3**.
 3. [x] `add store adapter integration tests and implementation`
 4. [x] `add task api feature tests with sync service call`
 5. [x] `add app icon tasks migration model and status enum`
-6. [ ] `add task api controller request resource and routes` ← **next**
-7. [ ] `add task service repository and IconFetchResult dto`
+6. [x] `add task api controller request resource and routes`
+7. [ ] `add task service repository and IconFetchResult dto` ← **next**
 8. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
 9. [ ] `update readme with launch instructions`
 
