@@ -10,6 +10,8 @@ class AppleStoreServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(module_path('AppleStore', 'config/applestore.php'), 'applestore');
+
         $this->app->bind(AppleIconProvider::class, AppleStoreIconAdapter::class);
     }
 }

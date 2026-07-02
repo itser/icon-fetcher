@@ -10,6 +10,8 @@ class GooglePlayServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(module_path('GooglePlay', 'config/googleplay.php'), 'googleplay');
+
         $this->app->bind(GooglePlayIconProvider::class, GooglePlayIconAdapter::class);
     }
 }
