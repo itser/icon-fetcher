@@ -7,7 +7,7 @@
 
 ## Modules
 
-- `AppIcon` — API entrypoint and use-case orchestrator
+- `AppIcon` — API entrypoint; orchestrates via Service layer
 - `AppleStore` — infrastructure adapter for Apple App Store
 - `GooglePlay` — infrastructure adapter for Google Play
 - `app/Shared` — cross-module DTO and Exceptions
