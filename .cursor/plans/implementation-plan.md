@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: Laravel 12 + Docker, modules scaffold done, adapter contracts + store adapters implemented (iTunes / Play Store, module configs). **Next: step 3a — feature tests + task API.**
+Current state: steps 0–2 done, feature tests (red). **3a.1 done. Next: 3a.2 — controller, request, resource, routes.**
 
 ## Principles
 
@@ -83,7 +83,13 @@ public function handle(AppIconTaskService $service): void
 - Controller → service only, never repository
 - Job → `execute()` only
 
-**Phase 1 order:**
+**Phase 1 implementation order (task API):**
+
+1. Migration + model + enum
+2. Controller + FormRequest + Resource + routes
+3. Service + Repository + DTO (wire controller to service; feature tests go green)
+
+**Phase 1 runtime order (after step 3):**
 
 1. Controller calls `service->createAndFetch()` (sync, result in POST response)
 2. Wrap in `ProcessAppIconTaskJob` (still sync)
@@ -182,9 +188,9 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 3a. Feature tests → task API (sync, direct service call) — **next**
+### 3a. Feature tests → task API (sync)
 
-**Tests (red):**
+**Tests (red) — done:**
 
 - [x] `POST /api/v1/app-icons/tasks` valid `bundle_id` → `200`, `status: completed`, urls
 - [x] `POST` invalid `bundle_id` → `422`
@@ -192,18 +198,50 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 - [x] `GET` partial success → completed, one url + errors
 - [x] `GET` unknown id → `404`
 
-**Implementation (green):** ← **next**
+Feature tests stay **red** until step **3a.3** is complete.
 
-- `AppIconTaskService`, `AppIconTaskRepository`
-- DTO in `app/Shared/DTO/` as needed
-- Migration `app_icon_tasks`, model `AppIconTask`, enum `AppIconTaskStatus`
-- `AppIconTaskController` → `service->createAndFetch($bundleId)`
-- `StoreAppIconTaskRequest`, `AppIconTaskResource`
+---
+
+#### 3a.1. Persistence layer — done
+
+**Implementation:**
+
+- [x] Migration `app_icon_tasks` (`bundle_id`, `status`, `apple_icon_url`, `google_icon_url`, `errors`, timestamps)
+- [x] Model `AppIconTask` (fillable, casts: `status` → enum, `errors` → array)
+- [x] Enum `AppIconTaskStatus` (`pending`, `processing`, `completed`, `failed`)
+
+**Verify:** `php artisan migrate` in Docker; model usable in `tinker`.
+
+---
+
+#### 3a.2. HTTP layer (no business logic yet) — **next**
+
+**Implementation:**
+
+- [ ] `StoreAppIconTaskRequest` — `bundle_id` regex validation
+- [ ] `AppIconTaskResource` — flat JSON: `id`, `bundle_id`, `status`, urls, `errors`
+- [ ] `AppIconTaskController` — `store()`, `show()` (thin; calls service)
+- [ ] Routes in `AppIcon/routes/api.php`: `POST/GET app-icons/tasks`
+
+Controller methods exist; service calls can stub or 501 until **3a.3**.
+
+---
+
+#### 3a.3. Business layer (feature tests green)
+
+**Implementation:**
+
+- [ ] `AppIconTaskRepository` — CRUD via model (not `DB::` facade)
+- [ ] `AppIconTaskService` — `createAndFetch()`, `find()`, `execute()`
+- [ ] DTO `IconFetchResult` in `app/Shared/DTO/` if needed
+- [ ] Wire controller → `service->createAndFetch()` / `service->find()`
 
 **Flow (sync, no job):**
 
 1. POST → controller → `service->createAndFetch()` → `completed` → `200` with urls
 2. GET → controller → `service->find($id)` → result
+
+**Verify:** `php artisan test tests/Feature/AppIconTaskApiTest.php` — all green.
 
 ---
 
@@ -268,11 +306,13 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 2. [x] `add adapter contract tests and provider bindings`
 3. [x] `add store adapter integration tests and implementation`
 4. [x] `add task api feature tests with sync service call`
-5. [ ] `implement task api service controller and migration` ← **next**
-6. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
-7. [ ] `update readme with launch instructions`
+5. [x] `add app icon tasks migration model and status enum`
+6. [ ] `add task api controller request resource and routes` ← **next**
+7. [ ] `add task service repository and IconFetchResult dto`
+8. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
+9. [ ] `update readme with launch instructions`
 
 **Phase 2:**
 
-8. [ ] `add redis and horizon to docker compose`
-9. [ ] `switch queue to redis and add horizon config`
+10. [ ] `add redis and horizon to docker compose`
+11. [ ] `switch queue to redis and add horizon config`
