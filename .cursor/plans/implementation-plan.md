@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: Phase 1 sync MVP done (incl. job). **Next: step 4 — Docker & README polish.**
+Current state: Phase 1 complete. **Phase 2 red tests written. Next: Redis + Horizon green.**
 
 ## Principles
 
@@ -281,11 +281,10 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 ---
 
-### 4. Docker & README
+### 4. Docker — done
 
-- `docker compose up` + `migrate` + `test` — all green
-- README: launch, web UI, curl examples (success, partial, invalid), time spent
-- `.env`: `QUEUE_CONNECTION=sync`
+- [x] `docker compose up` + `migrate` + `test` — all green (17 tests)
+- [x] `.env` / `.env.example`: `QUEUE_CONNECTION=sync`, `DB_CONNECTION=sqlite`
 
 ---
 
@@ -293,10 +292,13 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 ### 5. Migrate to Redis + Horizon
 
-**Tests:**
+**Tests (red):**
 
-- Existing tests stay green (`sync` in phpunit.xml)
-- Feature test: job pushed to redis queue (`Queue::fake`)
+- [x] Existing tests stay green (`sync` in `phpunit.xml`)
+- [x] `AppIconTaskAsyncQueueTest`: POST → `202`, `pending`, `Queue::assertPushed(ProcessAppIconTaskJob)`
+- [x] GET returns `pending` after async POST (job not processed)
+
+**Implementation (green):** ← **next**
 
 **Docker:**
 
@@ -319,6 +321,17 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 ---
 
+### 6. README (final)
+
+**After Phase 1 + Phase 2 (or Phase 1 only if skipping async):**
+
+- [ ] Launch: `docker compose up`, `migrate`, `test`
+- [ ] Web UI: http://localhost:8081/app-icons
+- [ ] curl examples: success, partial, invalid `bundle_id`
+- [ ] Time spent on the task
+
+---
+
 ## Commit order (TDD)
 
 **Phase 1:**
@@ -333,9 +346,12 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 8. [x] `add list app icon tasks endpoint through service layers`
 9. [x] `add minimal blade ui for app icon fetcher`
 10. [x] `wrap fetch in ProcessAppIconTaskJob delegating to service`
-11. [ ] `update readme with launch instructions` ← **next**
 
 **Phase 2:**
 
-12. [ ] `add redis and horizon to docker compose`
-13. [ ] `switch queue to redis and add horizon config`
+11. [ ] `add redis and horizon to docker compose` ← **next**
+12. [ ] `switch queue to redis and add horizon config`
+
+**Final:**
+
+13. [ ] `update readme with launch instructions and time spent`
