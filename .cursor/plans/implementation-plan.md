@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: 3a.1–3a.2 done. **Next: 3a.3 — repository, service logic, DTO.**
+Current state: 3a complete (feature tests green after migrate). **Next: 3b — ProcessAppIconTaskJob.**
 
 ## Principles
 
@@ -227,14 +227,14 @@ Feature tests stay **red** until step **3a.3** is complete.
 
 ---
 
-#### 3a.3. Business layer (feature tests green) — **next**
+#### 3a.3. Business layer (feature tests green) — done
 
 **Implementation:**
 
-- [ ] `AppIconTaskRepository` — CRUD via model (not `DB::` facade)
-- [ ] `AppIconTaskService` — `createAndFetch()`, `find()`, `execute()`
-- [ ] DTO `IconFetchResult` in `app/Shared/DTO/` if needed
-- [ ] Wire controller → `service->createAndFetch()` / `service->find()`
+- [x] `AppIconTaskRepository` — CRUD via model (not `DB::` facade)
+- [x] `AppIconTaskService` — `createAndFetch()`, `find()`, `execute()`
+- [x] DTO `IconFetchResult` in `app/Shared/DTO/`
+- [x] Wire controller → `service->createAndFetch()` / `service->find()`
 
 **Flow (sync, no job):**
 
@@ -308,8 +308,8 @@ Feature tests stay **red** until step **3a.3** is complete.
 4. [x] `add task api feature tests with sync service call`
 5. [x] `add app icon tasks migration model and status enum`
 6. [x] `add task api controller request resource and routes`
-7. [ ] `add task service repository and IconFetchResult dto` ← **next**
-8. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
+7. [x] `add task service repository and IconFetchResult dto`
+8. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service` ← **next**
 9. [ ] `update readme with launch instructions`
 
 **Phase 2:**
