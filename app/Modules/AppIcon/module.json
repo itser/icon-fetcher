@@ -1,0 +1,11 @@
+{
+    "name": "AppIcon",
+    "alias": "appicon",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AppIcon\\Providers\\AppIconServiceProvider"
+    ],
+    "files": []
+}

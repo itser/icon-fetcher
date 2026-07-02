@@ -1,0 +1,11 @@
+{
+    "name": "GooglePlay",
+    "alias": "googleplay",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "AppleStore",
+    "alias": "applestore",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        
+    ],
+    "files": []
+}
