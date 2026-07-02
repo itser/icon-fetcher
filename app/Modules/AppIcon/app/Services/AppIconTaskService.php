@@ -19,19 +19,29 @@ class AppIconTaskService
         private readonly GooglePlayIconProvider $googleProvider,
     ) {}
 
-    public function createAndFetch(string $bundleId): AppIconTask
+    public function create(string $bundleId): AppIconTask
     {
-        $task = $this->repository->create([
+        return $this->repository->create([
             'bundle_id' => $bundleId,
             'status' => AppIconTaskStatus::Pending,
             'apple_icon_url' => null,
             'google_icon_url' => null,
             'errors' => [],
         ]);
+    }
+
+    public function submit(string $bundleId): AppIconTask
+    {
+        $task = $this->create($bundleId);
 
         ProcessAppIconTaskJob::dispatch($task->id);
 
         return $this->repository->find($task->id) ?? $task;
+    }
+
+    public function createAndFetch(string $bundleId): AppIconTask
+    {
+        return $this->submit($bundleId);
     }
 
     public function find(int $id): ?AppIconTask

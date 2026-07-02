@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: Phase 1 complete. **Phase 2 red tests written. Next: Redis + Horizon green.**
+Current state: Phase 2 app logic green (202 + submit). **Next: Docker redis + Horizon.**
 
 ## Principles
 
@@ -298,18 +298,12 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 - [x] `AppIconTaskAsyncQueueTest`: POST → `202`, `pending`, `Queue::assertPushed(ProcessAppIconTaskJob)`
 - [x] GET returns `pending` after async POST (job not processed)
 
-**Implementation (green):** ← **next**
+**Implementation (green):**
 
-**Docker:**
-
-- `redis` (Redis 7)
-- `horizon` — worker + UI at `/horizon`
-- `redis` extension in `app/docker/Dockerfile`
-
-**Config:**
-
-- `.env`: `QUEUE_CONNECTION=redis`, `REDIS_HOST=redis`
-- `laravel/horizon`, supervisors for `ProcessAppIconTaskJob`
+- [x] `AppIconTaskService::create()` + `submit()` — create pending task, dispatch job (no fetch in controller path)
+- [x] POST → `202` when `queue.default` is `redis`; `200` + `completed` when `sync`
+- [ ] Docker: `redis` + `horizon` worker
+- [ ] Config: `.env` redis, `laravel/horizon`
 
 **Behavior (async):**
 
