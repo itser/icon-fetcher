@@ -1,0 +1,9 @@
+{
+    "name": "nwidart/applestore",
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "Modules\\AppleStore\\": "app/"
+        }
+    }
+}

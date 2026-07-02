@@ -1,0 +1,9 @@
+{
+    "name": "nwidart/googleplay",
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "Modules\\GooglePlay\\": "app/"
+        }
+    }
+}
