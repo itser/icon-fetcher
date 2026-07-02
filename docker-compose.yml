@@ -5,6 +5,11 @@ services:
     volumes:
       - ./app:/var/www
     working_dir: /var/www
+    environment:
+      REDIS_HOST: redis
+    depends_on:
+      redis:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "php-fpm -t || exit 1"]
       interval: 10s
@@ -22,3 +27,24 @@ services:
     depends_on:
       app:
         condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  horizon:
+    build:
+      context: ./app/docker
+    command: php artisan horizon
+    volumes:
+      - ./app:/var/www
+    working_dir: /var/www
+    environment:
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_started

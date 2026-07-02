@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: Phase 2 app logic green (202 + submit). **Next: Docker redis + Horizon.**
+Current state: **Phase 2 complete.** Next: step 6 — final README.
 
 ## Principles
 
@@ -302,8 +302,12 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 - [x] `AppIconTaskService::create()` + `submit()` — create pending task, dispatch job (no fetch in controller path)
 - [x] POST → `202` when `queue.default` is `redis`; `200` + `completed` when `sync`
-- [ ] Docker: `redis` + `horizon` worker
-- [ ] Config: `.env` redis, `laravel/horizon`
+- [x] Docker: `redis` + `horizon` worker (`pcntl` + `redis` in Dockerfile)
+- [x] Config: `laravel/horizon`, `HorizonServiceProvider`, gate for `local`
+- [x] `docker-compose`: `REDIS_HOST=redis` on app; `QUEUE_CONNECTION=redis` on horizon only
+- [x] Tests: `TestCase` forces `queue.default=sync`; async tests set `redis` explicitly
+
+**Verify:** `QUEUE_CONNECTION=redis` in `.env` → POST `202`, Horizon processes job → GET `completed`. UI: http://localhost:8081/horizon
 
 **Behavior (async):**
 
@@ -343,9 +347,9 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 **Phase 2:**
 
-11. [ ] `add redis and horizon to docker compose` ← **next**
-12. [ ] `switch queue to redis and add horizon config`
+11. [x] `add redis and horizon to docker compose`
+12. [x] `switch queue to redis and add horizon config`
 
 **Final:**
 
-13. [ ] `update readme with launch instructions and time spent`
+13. [ ] `update readme with launch instructions and time spent` ← **next**
