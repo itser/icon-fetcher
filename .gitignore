@@ -8,6 +8,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# PhpStorm HTTP client (local)
+app/http/
+
 # Environment
 .env
 .env.*

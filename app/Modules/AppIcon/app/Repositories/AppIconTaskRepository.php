@@ -2,6 +2,7 @@
 
 namespace Modules\AppIcon\Repositories;
 
+use Illuminate\Database\Eloquent\Collection;
 use Modules\AppIcon\Enums\AppIconTaskStatus;
 use Modules\AppIcon\Models\AppIconTask;
 
@@ -18,6 +19,14 @@ class AppIconTaskRepository
     public function find(int $id): ?AppIconTask
     {
         return AppIconTask::query()->find($id);
+    }
+
+    /**
+     * @return Collection<int, AppIconTask>
+     */
+    public function all(): Collection
+    {
+        return AppIconTask::query()->latest('id')->get();
     }
 
     /**

@@ -98,6 +98,32 @@ class AppIconTaskApiTest extends TestCase
         $response->assertNotFound();
     }
 
+    public function test_get_returns_empty_list_when_no_tasks(): void
+    {
+        $response = $this->getJson('/api/v1/app-icons/tasks');
+
+        $response->assertOk()
+            ->assertJson(['data' => []]);
+    }
+
+    public function test_get_returns_list_of_tasks(): void
+    {
+        $this->fakeBothStoresSuccess();
+
+        $this->postJson('/api/v1/app-icons/tasks', [
+            'bundle_id' => self::BUNDLE_ID,
+        ])->assertOk();
+
+        $response = $this->getJson('/api/v1/app-icons/tasks');
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.bundle_id', self::BUNDLE_ID)
+            ->assertJsonPath('data.0.status', 'completed')
+            ->assertJsonPath('data.0.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.0.google_icon_url', self::GOOGLE_ICON_URL);
+    }
+
     private function fakeBothStoresSuccess(): void
     {
         Http::fake([

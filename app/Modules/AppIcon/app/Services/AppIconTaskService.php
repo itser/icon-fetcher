@@ -3,6 +3,7 @@
 namespace Modules\AppIcon\Services;
 
 use App\Shared\DTO\IconFetchResult;
+use Illuminate\Database\Eloquent\Collection;
 use Modules\AppIcon\Contracts\AppleIconProvider;
 use Modules\AppIcon\Contracts\GooglePlayIconProvider;
 use Modules\AppIcon\Enums\AppIconTaskStatus;
@@ -33,6 +34,14 @@ class AppIconTaskService
     public function find(int $id): ?AppIconTask
     {
         return $this->repository->find($id);
+    }
+
+    /**
+     * @return Collection<int, AppIconTask>
+     */
+    public function list(): Collection
+    {
+        return $this->repository->all();
     }
 
     public function execute(int $taskId): AppIconTask

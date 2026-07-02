@@ -128,6 +128,7 @@ flowchart LR
 
 | Method | Path                           | Phase 1 (sync)          | Phase 2 (async)      |
 | ------ | ------------------------------ | ----------------------- | -------------------- |
+| GET    | `/api/v1/app-icons/tasks`      | `200`, list of tasks    | `200`, list of tasks |
 | POST   | `/api/v1/app-icons/tasks`      | `200`, completed + urls | `202`, pending       |
 | GET    | `/api/v1/app-icons/tasks/{id}` | `200`, completed + urls | `200`, status + urls |
 
