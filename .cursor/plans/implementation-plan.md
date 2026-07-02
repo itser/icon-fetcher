@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: **Phase 2 complete.** Next: step 6 — final README.
+Current state: **Phase 2 complete.** Next: manual testing (5.1), then step 6 — final README.
 
 ## Principles
 
@@ -319,13 +319,33 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 ---
 
+### 5.1. Manual testing
+
+Reference: [manual-test-bundle-ids.md](manual-test-bundle-ids.md)
+
+**Sync (default `QUEUE_CONNECTION=sync` in app `.env`):**
+
+- [ ] **Both stores** — e.g. `com.nianticlabs.pokemongo` → both icons, empty `errors` (not Android-only IDs like `org.telegram.messenger`)
+- [ ] **Apple only** — e.g. `com.apple.MobileSMS` → Apple icon, Google error, `status: completed`
+- [ ] **Google only** — e.g. `com.instagram.android` → Google icon, Apple error
+- [ ] **Neither** — `com.example.totally.fake.app` → both errors
+- [ ] **422** — `not-valid` → validation error, no task
+- [ ] **List tasks** — UI **List tasks** shows history from prior POSTs
+
+**Async (`QUEUE_CONNECTION=redis`, Horizon up):**
+
+- [ ] POST → `202`, `pending`; after poll → `completed` with urls
+- [ ] Job visible in http://localhost:8081/horizon
+
+---
+
 ### 6. README (final)
 
 **After Phase 1 + Phase 2 (or Phase 1 only if skipping async):**
 
 - [ ] Launch: `docker compose up`, `migrate`, `test`
 - [ ] Web UI: http://localhost:8081/app-icons
-- [ ] curl examples: success, partial, invalid `bundle_id`
+- [ ] curl examples: success, partial, invalid `bundle_id` (see [manual-test-bundle-ids.md](manual-test-bundle-ids.md))
 - [ ] Time spent on the task
 
 ---
