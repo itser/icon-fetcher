@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: Laravel 12 + Docker, `nwidart/laravel-modules` installed, API routing `/api`, modules `AppIcon` / `AppleStore` / `GooglePlay`, adapter contracts done.
+Current state: Laravel 12 + Docker, modules scaffold done, adapter contracts + store adapters implemented (iTunes / Play Store, module configs). **Next: step 3a — feature tests + task API.**
 
 ## Principles
 
@@ -164,34 +164,35 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 2. Integration tests → store adapters
+### 2. Integration tests → store adapters — done
 
 **Tests (red) with `Http::fake` + fixtures in `tests/Fixtures/`:**
 
-- `AppleStoreIconAdapter`: fixture JSON → icon url
-- `AppleStoreIconAdapter`: empty results → error
-- `GooglePlayIconAdapter`: fixture HTML → icon url
-- `GooglePlayIconAdapter`: 404 / timeout → error
+- [x] `AppleStoreIconAdapter`: fixture JSON → icon url
+- [x] `AppleStoreIconAdapter`: empty results → error
+- [x] `GooglePlayIconAdapter`: fixture HTML → icon url
+- [x] `GooglePlayIconAdapter`: 404 / timeout → error
 
 **Implementation (green):**
 
-- Apple: iTunes Lookup, `artworkUrl512`
-- Google: Play Store HTML, og:image
-- Timeout 3s, graceful error mapping
+- [x] Apple: iTunes Lookup, `artworkUrl512`
+- [x] Google: Play Store HTML, og:image
+- [x] Timeout 3s, graceful error mapping
+- [x] Module configs: `applestore.php`, `googleplay.php` (`mergeConfigFrom` in ServiceProviders)
 
 ---
 
-### 3a. Feature tests → task API (sync, direct service call)
+### 3a. Feature tests → task API (sync, direct service call) — **next**
 
 **Tests (red):**
 
-- `POST /api/v1/app-icons/tasks` valid `bundle_id` → `200`, `status: completed`, urls
-- `POST` invalid `bundle_id` → `422`
-- `GET /api/v1/app-icons/tasks/{id}` → `200`, completed, urls
-- `GET` partial success → completed, one url + errors
-- `GET` unknown id → `404`
+- [x] `POST /api/v1/app-icons/tasks` valid `bundle_id` → `200`, `status: completed`, urls
+- [x] `POST` invalid `bundle_id` → `422`
+- [x] `GET /api/v1/app-icons/tasks/{id}` → `200`, completed, urls
+- [x] `GET` partial success → completed, one url + errors
+- [x] `GET` unknown id → `404`
 
-**Implementation (green):**
+**Implementation (green):** ← **next**
 
 - `AppIconTaskService`, `AppIconTaskRepository`
 - DTO in `app/Shared/DTO/` as needed
@@ -265,12 +266,13 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 1. [x] `add modules scaffold and api v1 routing`
 2. [x] `add adapter contract tests and provider bindings`
-3. [ ] `add store adapter integration tests and implementation`
-4. [ ] `add task api feature tests with sync service call`
-5. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
-6. [ ] `update readme with launch instructions`
+3. [x] `add store adapter integration tests and implementation`
+4. [x] `add task api feature tests with sync service call`
+5. [ ] `implement task api service controller and migration` ← **next**
+6. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
+7. [ ] `update readme with launch instructions`
 
 **Phase 2:**
 
-7. [ ] `add redis and horizon to docker compose`
-8. [ ] `switch queue to redis and add horizon config`
+8. [ ] `add redis and horizon to docker compose`
+9. [ ] `switch queue to redis and add horizon config`
