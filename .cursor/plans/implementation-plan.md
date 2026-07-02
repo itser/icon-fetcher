@@ -2,7 +2,7 @@
 
 Based on: [architecture-plan.md](architecture-plan.md)
 
-Current state: 3a + minimal web UI done. **Next: 3b — ProcessAppIconTaskJob.**
+Current state: Phase 1 sync MVP done (incl. job). **Next: step 4 — Docker & README polish.**
 
 ## Principles
 
@@ -266,18 +266,18 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 
 ---
 
-### 3b. Wrap in job (still sync)
+### 3b. Wrap in job (still sync) — done
 
 **Tests (red):**
 
-- Feature tests stay green (sync job runs inline)
-- `ProcessAppIconTaskJob` delegates to `AppIconTaskService::execute()`
+- [x] Feature tests stay green (sync job runs inline)
+- [x] `ProcessAppIconTaskJob` delegates to `AppIconTaskService::execute()`
 
 **Implementation (green):**
 
-- Controller: `create task` + `dispatch(ProcessAppIconTaskJob)` instead of `createAndFetch()`
-- Or `createAndFetch()` dispatches internally — service API unchanged for job path
-- `QUEUE_CONNECTION=sync`
+- [x] `ProcessAppIconTaskJob` → `service->execute($taskId)`
+- [x] `createAndFetch()` creates task + `dispatch(ProcessAppIconTaskJob)` (sync runs inline)
+- [x] `QUEUE_CONNECTION=sync` in `phpunit.xml`
 
 ---
 
@@ -332,8 +332,8 @@ Files: `routes/web.php`, `resources/views/app-icons/index.blade.php`.
 7. [x] `add task service repository and IconFetchResult dto`
 8. [x] `add list app icon tasks endpoint through service layers`
 9. [x] `add minimal blade ui for app icon fetcher`
-10. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service` ← **next**
-11. [ ] `update readme with launch instructions`
+10. [x] `wrap fetch in ProcessAppIconTaskJob delegating to service`
+11. [ ] `update readme with launch instructions` ← **next**
 
 **Phase 2:**
 

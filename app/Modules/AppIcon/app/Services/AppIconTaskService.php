@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Modules\AppIcon\Contracts\AppleIconProvider;
 use Modules\AppIcon\Contracts\GooglePlayIconProvider;
 use Modules\AppIcon\Enums\AppIconTaskStatus;
+use Modules\AppIcon\Jobs\ProcessAppIconTaskJob;
 use Modules\AppIcon\Models\AppIconTask;
 use Modules\AppIcon\Repositories\AppIconTaskRepository;
 
@@ -28,7 +29,9 @@ class AppIconTaskService
             'errors' => [],
         ]);
 
-        return $this->execute($task->id);
+        ProcessAppIconTaskJob::dispatch($task->id);
+
+        return $this->repository->find($task->id) ?? $task;
     }
 
     public function find(int $id): ?AppIconTask
