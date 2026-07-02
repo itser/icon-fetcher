@@ -27,6 +27,5 @@
 ## Testing
 
 - Feature tests as primary verification
-- Unit tests for use-case orchestration and module contracts
-- `Http::fake` for external store integrations
 - Adapter contract tests: each port has a concrete adapter implementation
+- `Http::fake` for external store integrations

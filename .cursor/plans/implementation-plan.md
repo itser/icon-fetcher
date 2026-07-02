@@ -164,25 +164,7 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 2. Unit tests → service
-
-**Tests (red):**
-
-- `AppIconTaskService::execute()`: both stores return url → full result
-- `execute()`: one store not found → partial + errors
-- `execute()`: both failed → completed with errors, no exception
-
-**Implementation (green):**
-
-- `AppIconTaskService`, `AppIconTaskRepository` (interface for mocks in tests)
-- DTO: `StoreIconResult`, `AppIconTaskResult` in `app/Shared/DTO/`
-- Service depends on repository (mock) and contracts (mock)
-
-> Migration and Eloquent model — in step 4a. Here repository is interface + in-memory/mock.
-
----
-
-### 3. Integration tests → store adapters
+### 2. Integration tests → store adapters
 
 **Tests (red) with `Http::fake` + fixtures in `tests/Fixtures/`:**
 
@@ -199,7 +181,7 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 4a. Feature tests → task API (sync, direct service call)
+### 3a. Feature tests → task API (sync, direct service call)
 
 **Tests (red):**
 
@@ -211,8 +193,9 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 **Implementation (green):**
 
+- `AppIconTaskService`, `AppIconTaskRepository`
+- DTO in `app/Shared/DTO/` as needed
 - Migration `app_icon_tasks`, model `AppIconTask`, enum `AppIconTaskStatus`
-- `AppIconTaskRepository` (Eloquent)
 - `AppIconTaskController` → `service->createAndFetch($bundleId)`
 - `StoreAppIconTaskRequest`, `AppIconTaskResource`
 
@@ -223,7 +206,7 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 4b. Wrap in job (still sync)
+### 3b. Wrap in job (still sync)
 
 **Tests (red):**
 
@@ -238,7 +221,7 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ---
 
-### 5. Docker & README
+### 4. Docker & README
 
 - `docker compose up` + `migrate` + `test` — all green
 - README: curl examples (success, partial, invalid), time spent
@@ -248,7 +231,7 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 ## Phase 2 — Redis queues
 
-### 6. Migrate to Redis + Horizon
+### 5. Migrate to Redis + Horizon
 
 **Tests:**
 
@@ -282,10 +265,12 @@ Routing: `bootstrap/app.php` → prefix `/api`, module `AppIcon` → prefix `/v1
 
 1. [x] `add modules scaffold and api v1 routing`
 2. [x] `add adapter contract tests and provider bindings`
-3. [ ] `add AppIconTaskService unit tests and implementation`
-4. `add store adapter integration tests and implementation`
-5. `add task api feature tests with sync service call`
-6. `wrap fetch in ProcessAppIconTaskJob delegating to service`
-7. `update readme with launch instructions`
+3. [ ] `add store adapter integration tests and implementation`
+4. [ ] `add task api feature tests with sync service call`
+5. [ ] `wrap fetch in ProcessAppIconTaskJob delegating to service`
+6. [ ] `update readme with launch instructions`
 
-**Phase 2:** 8. `add redis and horizon to docker compose` 9. `switch queue to redis and add horizon config`
+**Phase 2:**
+
+7. [ ] `add redis and horizon to docker compose`
+8. [ ] `switch queue to redis and add horizon config`
