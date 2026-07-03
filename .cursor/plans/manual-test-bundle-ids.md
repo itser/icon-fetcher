@@ -48,13 +48,19 @@ Verified: same `bundle_id` exists in iTunes Lookup and on Play Store.
 | `not-valid` | Fails `bundle_id` regex |
 | `` (empty) | Required field |
 
-## Async mode (Phase 2)
+## Async mode
 
-1. Set `QUEUE_CONNECTION=redis` in `app/.env`, restart: `docker compose up -d`
-2. Open http://localhost:8081/horizon — worker running
-3. POST a bundle from **Both stores** → `202`, `status: pending`
-4. Poll `GET /api/v1/app-icons/tasks/{id}` until `completed` + urls
-5. In Horizon: job appears and completes
+`.env.example` has `QUEUE_CONNECTION=redis`. Horizon worker: http://localhost:8081/horizon
+
+1. POST a bundle from **Both stores** → `202`, `status: pending`
+2. Poll `GET /api/v1/app-icons/tasks/{id}` until `completed` + urls (or use **List tasks** in UI)
+3. Job visible in Horizon on first fetch only
+
+## Cache
+
+1. Fetch the same `bundle_id` again within ~1 hour
+2. Expect `200`, `completed` immediately — **no new job** in Horizon
+3. New task row in **List tasks** (history), but no external HTTP
 
 ## Quick curl
 
