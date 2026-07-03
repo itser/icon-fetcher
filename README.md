@@ -4,14 +4,24 @@ CAS.AI test task — Laravel modular monolith. Enter a mobile app Bundle ID, get
 
 **Time spent:** 4 hours
 
+**Repository:** https://github.com/itser/icon-fetcher
+
 ## Prerequisites
 
+- Git
 - Docker and Docker Compose
 - No local PHP or Composer required
 
-## Installation
+## Quick start (from scratch)
 
-From the repository root:
+### 1. Clone
+
+```bash
+git clone https://github.com/itser/icon-fetcher.git
+cd icon-fetcher
+```
+
+### 2. Build and install
 
 ```bash
 docker compose up -d --build
@@ -23,11 +33,26 @@ docker compose exec app php artisan migrate
 docker compose up -d
 ```
 
-If `app/.env` already exists, skip the `cp` step.
-
 The final `docker compose up -d` restarts `horizon` — it may exit on first boot if `vendor/` is not installed yet.
 
-## Run
+### 3. Verify
+
+```bash
+docker compose ps
+docker compose exec app php artisan test
+```
+
+Expected: four services running (`app`, `nginx`, `redis`, `horizon`) and all tests passing.
+
+```bash
+curl -s -X POST http://localhost:8081/api/v1/app-icons/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"bundle_id":"org.telegram.messenger"}' | jq .
+```
+
+Open http://localhost:8081/app-icons — enter a bundle ID and click **Fetch icons**.
+
+## Run (after installation)
 
 ```bash
 docker compose up -d
@@ -37,10 +62,10 @@ docker compose up -d
 - Web UI: http://localhost:8081/app-icons
 - Horizon (async mode): http://localhost:8081/horizon
 
-### Tests
+### Stop
 
 ```bash
-docker compose exec app php artisan test
+docker compose down
 ```
 
 ## Web UI
