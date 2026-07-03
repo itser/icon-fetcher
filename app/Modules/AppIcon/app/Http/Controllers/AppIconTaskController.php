@@ -5,6 +5,7 @@ namespace Modules\AppIcon\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Modules\AppIcon\Enums\AppIconTaskStatus;
 use Modules\AppIcon\Http\Requests\StoreAppIconTaskRequest;
 use Modules\AppIcon\Http\Resources\AppIconTaskResource;
 use Modules\AppIcon\Services\AppIconTaskService;
@@ -27,11 +28,11 @@ class AppIconTaskController extends Controller
 
         $resource = new AppIconTaskResource($task);
 
-        if (config('queue.default') === 'redis') {
+        if (config('queue.default') === 'redis' && $task->status === AppIconTaskStatus::Pending) {
             return $resource->response()->setStatusCode(Response::HTTP_ACCEPTED);
         }
 
-        return $resource;
+        return $resource->response()->setStatusCode(Response::HTTP_OK);
     }
 
     public function show(int $id): AppIconTaskResource|JsonResponse

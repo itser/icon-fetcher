@@ -125,4 +125,4 @@ Horizon worker runs in the `horizon` service.
 - Laravel 12, `nwidart/laravel-modules`
 - Apple: iTunes Lookup API (`artworkUrl512`)
 - Google Play: HTML scrape (`og:image`)
-- SQLite, file cache/session, sync queue by default
+- SQLite, Redis cache, file session, sync queue by default

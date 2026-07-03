@@ -34,6 +34,13 @@ class AppIconServiceProvider extends ModuleServiceProvider
         RouteServiceProvider::class,
     ];
 
+    public function register(): void
+    {
+        parent::register();
+
+        $this->mergeConfigFrom(module_path('AppIcon', 'config/config.php'), 'appicon');
+    }
+
     /**
      * Define module schedules.
      * 

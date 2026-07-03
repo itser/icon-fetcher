@@ -4,6 +4,7 @@ namespace Modules\AppIcon\Services;
 
 use App\Shared\DTO\IconFetchResult;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Modules\AppIcon\Contracts\AppleIconProvider;
 use Modules\AppIcon\Contracts\GooglePlayIconProvider;
 use Modules\AppIcon\Enums\AppIconTaskStatus;
@@ -32,11 +33,28 @@ class AppIconTaskService
 
     public function submit(string $bundleId): AppIconTask
     {
+        $cached = Cache::get($this->cacheKey($bundleId));
+
+        if ($cached instanceof IconFetchResult) {
+            return $this->createCompleted($bundleId, $cached);
+        }
+
         $task = $this->create($bundleId);
 
         ProcessAppIconTaskJob::dispatch($task->id);
 
         return $this->repository->find($task->id) ?? $task;
+    }
+
+    private function createCompleted(string $bundleId, IconFetchResult $result): AppIconTask
+    {
+        return $this->repository->create([
+            'bundle_id' => $bundleId,
+            'status' => AppIconTaskStatus::Completed,
+            'apple_icon_url' => $result->appleIconUrl,
+            'google_icon_url' => $result->googleIconUrl,
+            'errors' => $result->errors,
+        ]);
     }
 
     public function createAndFetch(string $bundleId): AppIconTask
@@ -81,6 +99,15 @@ class AppIconTaskService
 
     private function fetchIcons(string $bundleId): IconFetchResult
     {
+        return Cache::remember(
+            $this->cacheKey($bundleId),
+            (int) config('appicon.cache_ttl'),
+            fn () => $this->fetchIconsFromProviders($bundleId),
+        );
+    }
+
+    private function fetchIconsFromProviders(string $bundleId): IconFetchResult
+    {
         $appleIconUrl = $this->appleProvider->fetchIconUrl($bundleId);
         $googleIconUrl = $this->googleProvider->fetchIconUrl($bundleId);
 
@@ -95,5 +122,10 @@ class AppIconTaskService
         }
 
         return new IconFetchResult($appleIconUrl, $googleIconUrl, $errors);
+    }
+
+    private function cacheKey(string $bundleId): string
+    {
+        return 'app-icon:'.$bundleId;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Shared\DTO\IconFetchResult;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Modules\AppIcon\Jobs\ProcessAppIconTaskJob;
@@ -55,5 +57,32 @@ class AppIconTaskAsyncQueueTest extends TestCase
             ->assertJsonPath('data.status', 'pending')
             ->assertJsonPath('data.apple_icon_url', null)
             ->assertJsonPath('data.google_icon_url', null);
+    }
+
+    public function test_post_returns_200_from_cache_without_dispatching_job_when_queue_is_redis(): void
+    {
+        Queue::fake();
+
+        Cache::put(
+            'app-icon:'.self::BUNDLE_ID,
+            new IconFetchResult(
+                'https://example.com/apple.png',
+                'https://example.com/google.png',
+                [],
+            ),
+            3600,
+        );
+
+        $response = $this->postJson('/api/v1/app-icons/tasks', [
+            'bundle_id' => self::BUNDLE_ID,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.apple_icon_url', 'https://example.com/apple.png')
+            ->assertJsonPath('data.google_icon_url', 'https://example.com/google.png')
+            ->assertJsonPath('data.errors', []);
+
+        Queue::assertNothingPushed();
     }
 }

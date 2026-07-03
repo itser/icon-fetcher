@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class AppIconTaskApiTest extends TestCase
@@ -122,6 +123,33 @@ class AppIconTaskApiTest extends TestCase
             ->assertJsonPath('data.0.status', 'completed')
             ->assertJsonPath('data.0.apple_icon_url', self::APPLE_ICON_URL)
             ->assertJsonPath('data.0.google_icon_url', self::GOOGLE_ICON_URL);
+    }
+
+    public function test_post_reuses_cached_result_for_same_bundle_id_without_extra_http_calls(): void
+    {
+        $this->fakeBothStoresSuccess();
+
+        $this->postJson('/api/v1/app-icons/tasks', [
+            'bundle_id' => self::BUNDLE_ID,
+        ])->assertOk();
+
+        Http::assertSentCount(2);
+
+        Queue::fake();
+
+        $response = $this->postJson('/api/v1/app-icons/tasks', [
+            'bundle_id' => self::BUNDLE_ID,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.bundle_id', self::BUNDLE_ID)
+            ->assertJsonPath('data.apple_icon_url', self::APPLE_ICON_URL)
+            ->assertJsonPath('data.google_icon_url', self::GOOGLE_ICON_URL)
+            ->assertJsonPath('data.errors', []);
+
+        Http::assertSentCount(2);
+        Queue::assertNothingPushed();
     }
 
     private function fakeBothStoresSuccess(): void
